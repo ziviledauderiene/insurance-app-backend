@@ -12,7 +12,7 @@ const {
   MONGO_COMPASS_PASS,
   MONGO_COMPASS_CLUSTER_DB,
   MONGO_COMPASS_CLUSTER_URL,
-} = process.env
+} = process.env;
 
 app.use(express.json());
 app.use(testRouter);
@@ -23,8 +23,10 @@ mongoose.connect(
 );
 
 db.once('open', () => {
-  console.log('Connected to DB successfully!')
-  app.listen(PORT, () => console.log(`Server is running on port http://localhost:${PORT}`))
+  console.log('Connected to DB successfully!');
+  app.listen(PORT, () =>
+    console.log(`Server is running on port http://localhost:${PORT}`)
+  );
 });
 
-db.on('error', () => console.error('FAILED TO CONNECT TO DB'))
+db.on('error', () => console.error('FAILED TO CONNECT TO DB'));
