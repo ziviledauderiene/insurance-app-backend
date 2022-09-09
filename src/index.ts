@@ -1,13 +1,14 @@
 import express from 'express';
 import mongoose from 'mongoose';
-// require('dotenv').config({ path: '.env' });
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
+import cors from 'cors';
+import { ProcessEnv } from './utils/env';
 
-import { testRouter } from './routes/test';
+import testRouter  from './routes/routes';
 
 const app = express();
 
-dotenv.config()
+dotenv.config();
 
 const {
   PORT,
@@ -15,9 +16,10 @@ const {
   MONGO_COMPASS_PASS,
   MONGO_COMPASS_CLUSTER_DB,
   MONGO_COMPASS_CLUSTER_URL,
-} = process.env;
+}: ProcessEnv = process.env;
 
 app.use(express.json());
+app.use(cors());
 app.use(testRouter);
 
 const db = mongoose.connection;
