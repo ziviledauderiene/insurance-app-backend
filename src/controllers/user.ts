@@ -1,20 +1,20 @@
-import { Request, Response } from 'express';
-import logging from '../utils/logging';
-import bcryptjs from 'bcryptjs';
-import User from '../Schemas/user';
-import signJWT from '../functions/signToken';
-import { getUserByUsername, createNewUser } from '../models/userModel';
-import { CustomRequest } from '../interfaces/user';
+import bcryptjs from "bcryptjs";
+import { Request, Response } from "express";
+import signJWT from "../functions/signToken";
+import { CustomRequest } from "../interfaces/user";
+import { createNewUser, getUserByUsername } from "../models/userModel";
+import User from "../Schemas/user";
+import logging from "../utils/logging";
 
-const NAMESPACE = 'User';
+const NAMESPACE = "User";
 
 const MONGODB_DUPLICATE_CODE = 11000;
 
 const validateToken = (req: Request, res: Response) => {
-  logging.info(NAMESPACE, 'Token validated, user authorized.');
+  logging.info(NAMESPACE, "Token validated, user authorized.");
 
-  return res.status(200).json({
-    message: 'Token(s) validated',
+  return res.json({
+    message: "Token(s) validated",
     tokenIsValid: true,
   });
 };
@@ -50,10 +50,10 @@ const register = async (req: Request, res: Response) => {
   } catch (error) {
     if (error.code === MONGODB_DUPLICATE_CODE) {
       return res.status(400).json({
-        message: 'duplicate username',
+        message: "duplicate username",
       });
     }
-    throw error
+    throw error;
   }
 };
 
@@ -65,7 +65,7 @@ const login = async (req: Request, res: Response) => {
     bcryptjs.compare(password, user.password, (error, result) => {
       if (error || !result) {
         return res.status(401).json({
-          message: 'Unauthorized login attempt',
+          message: "Unauthorized login attempt",
         });
       }
       signJWT(user, (_error, token) => {
@@ -75,25 +75,25 @@ const login = async (req: Request, res: Response) => {
             error: _error,
           });
         }
-        return res.status(200).json({
-          message: 'Auth successful',
+        return res.json({
+          message: "Auth successful",
           token: token,
         });
       });
     });
   } else {
     return res.status(401).json({
-      message: 'Unauthorized login attempt',
+      message: "Unauthorized login attempt",
     });
   }
 };
 
 const getAllUsers = async (req: CustomRequest, res: Response) => {
   await User.find()
-    .select('-password')
+    .select("-password")
     .exec()
     .then((users) => {
-      return res.status(200).json({
+      return res.json({
         users: users,
         count: users.length,
       });

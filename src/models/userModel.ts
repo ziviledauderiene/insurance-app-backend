@@ -1,5 +1,5 @@
-import user from '../Schemas/user';
-import IUser from '../interfaces/user';
+import user from "../Schemas/user";
+import IUser from "../interfaces/user";
 
 const getUserByUsername = async (username: string): Promise<IUser | null> => {
   const data = await user.findOne(
