@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import Employer from "../interfaces/employer";
+import { IEmployer } from "../interfaces";
 
 const employerSchema: Schema = new Schema({
   id: { type: String, required: true, default: () => uuidv4() },
@@ -14,4 +14,4 @@ const employerSchema: Schema = new Schema({
   logo: { type: String, lowercase: true },
 });
 
-export default mongoose.model<Employer>("Employer", employerSchema);
+export default mongoose.model<IEmployer>("Employer", employerSchema);

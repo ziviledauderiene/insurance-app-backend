@@ -1,9 +1,17 @@
+/* eslint-disable consistent-return */
 import bcryptjs from "bcryptjs";
 import { Request, Response } from "express";
 import signJWT from "../functions/signToken";
-import { CustomRequest } from "../interfaces/user";
-import { createNewUser, getUserByUsername } from "../models/userModel";
-import User from "../Schemas/user";
+import { MyR, IUser, UserTypes } from "../interfaces";
+import { getEmployersObjectId } from "../models/employerModel";
+import {
+  createNewUser,
+  deleteUserById,
+  getUserById,
+  getUserByUsername,
+  getUsers,
+  updateUserById,
+} from "../models/userModel";
 import logging from "../utils/logging";
 
 const NAMESPACE = "User";
@@ -19,8 +27,8 @@ const validateToken = (req: Request, res: Response) => {
   });
 };
 
-const register = async (req: Request, res: Response) => {
-  const { username, password } = req.body;
+const register = async (req: Request, res: Response): Promise<void> => {
+  const { password, employer }: IUser = req.body;
 
   const somePromise = () =>
     new Promise<string>((resolve, reject) => {
@@ -37,21 +45,29 @@ const register = async (req: Request, res: Response) => {
   try {
     hash = await somePromise();
   } catch (error) {
-    return res.status(401).json({
+    res.status(401).json({
       message: error.message,
-      error: error,
+      error,
     });
+    return;
   }
   try {
-    const newUser = await createNewUser({ username, password: hash });
-    return res.status(201).json({
+    const { _id } = await getEmployersObjectId(employer);
+    const newUser = await createNewUser({
+      ...req.body,
+      password: hash,
+      employer: _id,
+    });
+    res.status(201).json({
       newUser,
     });
+    return;
   } catch (error) {
     if (error.code === MONGODB_DUPLICATE_CODE) {
-      return res.status(400).json({
+      res.status(400).json({
         message: "duplicate username",
       });
+      return;
     }
     throw error;
   }
@@ -77,7 +93,7 @@ const login = async (req: Request, res: Response) => {
         }
         return res.json({
           message: "Auth successful",
-          token: token,
+          token,
         });
       });
     });
@@ -88,22 +104,74 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
-const getAllUsers = async (req: CustomRequest, res: Response) => {
-  await User.find()
-    .select("-password")
-    .exec()
-    .then((users) => {
-      return res.json({
-        users: users,
-        count: users.length,
-      });
-    })
-    .catch((error) => {
-      return res.status(500).json({
-        message: error.message,
-        error,
-      });
+const getAllUsers = async (req: MyR, res: Response) => {
+  const { userType } = req.query;
+  const filter: Partial<IUser> = {};
+  userType && (filter.userType = userType as UserTypes);
+
+  try {
+    const users: IUser[] = await getUsers(filter);
+    res.json({
+      users,
+      count: users.length,
     });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      error,
+    });
+  }
 };
 
-export default { validateToken, register, login, getAllUsers };
+const getUser = async (req: MyR, res: Response): Promise<void> => {
+  const { id } = req.params;
+  try {
+    const user: IUser | null = await getUserById(id);
+    if (!user) {
+      res.status(404).json({ message: "user not found" });
+      return;
+    }
+    res.json({ user });
+    return;
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+const deleteUser = async (req: MyR, res: Response): Promise<void> => {
+  const { id } = req.params;
+  try {
+    const deleted: number = await deleteUserById(id);
+    if (deleted) {
+      res.json({ message: `user ${id} deleted` });
+    } else {
+      res.status(404).json({ message: `user ${id} not found` });
+    }
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+const updateUser = async (req: MyR, res: Response): Promise<void> => {
+  const { id } = req.params;
+  try {
+    const user: IUser | null = await updateUserById(id, req.body);
+    if (user) {
+      res.json({ message: `user ${id} updated`, user });
+    } else {
+      res.status(404).json({ message: `user ${id} not found` });
+    }
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+export default {
+  validateToken,
+  register,
+  login,
+  getAllUsers,
+  getUser,
+  deleteUser,
+  updateUser,
+};

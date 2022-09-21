@@ -1,28 +1,21 @@
+import { Types } from "mongoose";
+import { IEmployer } from "../interfaces";
 import Employer from "../Schemas/employer";
-import IEmployer from "../interfaces/employer";
 
-export const createNewEmployer = async ({
-  name,
-  code,
-  street,
-  city,
-  state,
-  zipCode,
-  phone,
-}: IEmployer): Promise<IEmployer> => {
-  return await Employer.create({
-    name,
-    code,
-    street,
-    city,
-    state,
-    zipCode,
-    phone,
-  });
+export const createNewEmployer = async (
+  data: IEmployer
+): Promise<IEmployer & { _id: Types.ObjectId }> => await Employer.create(data);
+
+export const findEmployers = async (filter: {
+  [prop: string]: { $regex: string; $options: string };
+}): Promise<IEmployer[]> => await Employer.find(filter).lean();
+
+export const deleteEmployerById = async (id: string): Promise<number> => {
+  const { deletedCount } = await Employer.deleteOne({ id });
+  return deletedCount;
 };
 
-export const findEmployers = async (
-  filter: Partial<IEmployer>
-): Promise<IEmployer[]> => {
-  return await Employer.find(filter).lean();
-};
+export const getEmployersObjectId = async (
+  id: string
+): Promise<IEmployer & { _id: Types.ObjectId }> =>
+  await Employer.findOne({ id }, { _id: 1 }).lean();

@@ -1,7 +1,10 @@
 import { Response } from "express";
-import { MyR } from "../middlewares/verifyToken";
-import IEmployer from "./../interfaces/employer";
-import { createNewEmployer, findEmployers } from "./../models/employerModel";
+import { IEmployer, MyR } from "../interfaces";
+import {
+  createNewEmployer,
+  deleteEmployerById,
+  findEmployers,
+} from "../models/employerModel";
 
 const createEmployer = async (req: MyR, res: Response): Promise<void> => {
   try {
@@ -10,7 +13,6 @@ const createEmployer = async (req: MyR, res: Response): Promise<void> => {
     return;
   } catch (error) {
     res.status(500).json({ message: error.message, error });
-    return;
   }
 };
 
@@ -27,8 +29,21 @@ const getEmployers = async (req: MyR, res: Response): Promise<void> => {
     return;
   } catch (error) {
     res.status(500).json({ message: error.message, error });
-    return;
   }
 };
 
-export default { createEmployer, getEmployers };
+const deleteEmployer = async (req: MyR, res: Response): Promise<void> => {
+  const { id } = req.params;
+  try {
+    const deleted: number = await deleteEmployerById(id);
+    if (deleted) {
+      res.json({ message: `employer ${id} deleted` });
+    } else {
+      res.status(404).json({ message: `employer ${id} not found` });
+    }
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+export default { createEmployer, getEmployers, deleteEmployer };

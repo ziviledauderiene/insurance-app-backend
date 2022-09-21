@@ -1,11 +1,9 @@
+import cors from "cors";
+import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-import cors from "cors";
-import { ProcessEnv } from "./utils/env";
-
-import testRouter from "./routes/routes";
-
+import router from "./routes";
+import ProcessEnv from "./utils/env.d";
 
 const app = express();
 
@@ -21,7 +19,7 @@ const {
 
 app.use(express.json());
 app.use(cors());
-app.use(testRouter);
+app.use(router);
 
 const db = mongoose.connection;
 mongoose.connect(
@@ -36,5 +34,3 @@ db.once("open", () => {
 });
 
 db.on("error", () => console.error("FAILED TO CONNECT TO DB"));
-
-// mongodb+ srv://coherentpotdb:X1kht6qrrmMcwLer@cluster1.g7plved.mongodb.net/test?retryWrites=true&w=majority

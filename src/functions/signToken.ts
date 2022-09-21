@@ -1,31 +1,45 @@
-import jwt from 'jsonwebtoken';
-import logging from '../utils/logging';
-import { JWTPayload } from '../interfaces/user';
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+import { JWTUser } from "../interfaces";
+import logging from "../utils/logging";
+import ProcessEnv from "../utils/env.d";
 
 dotenv.config();
 
+const { JWT_SECRET, JWT_ISSUER }: ProcessEnv = process.env;
 
-const { JWT_SECRET, JWT_ISSUER } = process.env;
-
-const NAMESPACE = 'Auth';
+const NAMESPACE = "Auth";
 
 const signJWT = (
-  user: JWTPayload,
+  user: JWTUser,
+  // eslint-disable-next-line no-unused-vars
   callback: (error: Error | null, token: string | null) => void
-  ): void => {
-  console.log(user, 'payload')
-  logging.info(NAMESPACE, `Attempting to sign token for ${user.id}`);
-
+): void => {
+  const {
+    username,
+    firstName,
+    lastName,
+    email,
+    userType,
+    employer,
+    id,
+  }: JWTUser = user;
+  logging.info(NAMESPACE, `Attempting to sign token for ${id}`);
   try {
     jwt.sign(
       {
-        username: user.username,
+        username,
+        firstName,
+        lastName,
+        email,
+        userType,
+        employer,
+        id,
       },
       JWT_SECRET,
       {
         issuer: JWT_ISSUER,
-        algorithm: 'HS256',
+        algorithm: "HS256",
       },
       (error, token) => {
         if (error) {

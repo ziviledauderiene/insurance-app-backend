@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
@@ -13,4 +14,4 @@ declare global {
   }
 }
 
-export { ProcessEnv };
+export default ProcessEnv ;
