@@ -4,6 +4,7 @@ import {
   createNewEmployer,
   deleteEmployerById,
   findEmployers,
+  getEmployerById,
 } from "../models/employerModel";
 
 const createEmployer = async (req: MyR, res: Response): Promise<void> => {
@@ -42,8 +43,22 @@ const deleteEmployer = async (req: MyR, res: Response): Promise<void> => {
       res.status(404).json({ message: `employer ${id} not found` });
     }
   } catch (error) {
-    res.status(500).json({ error });
+    res.status(500).json({ message: error.message, error });
   }
 };
 
-export default { createEmployer, getEmployers, deleteEmployer };
+const getEmployer = async (req: MyR, res: Response): Promise<void> => {
+  const { id } = req.params;
+  try {
+    const employer: IEmployer = await getEmployerById(id);
+    if (employer) {
+      res.json({ employer });
+    } else {
+      res.status(404).json({ message: `employer ${id} not found` });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message, error });
+  }
+};
+
+export default { createEmployer, getEmployers, deleteEmployer, getEmployer };

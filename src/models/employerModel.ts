@@ -19,3 +19,8 @@ export const getEmployersObjectId = async (
   id: string
 ): Promise<IEmployer & { _id: Types.ObjectId }> =>
   await Employer.findOne({ id }, { _id: 1 }).lean();
+
+export const getEmployerById = async (
+  id: string
+): Promise<IEmployer & { _id: Types.ObjectId }> =>
+  await Employer.findOne({ id }).lean();
