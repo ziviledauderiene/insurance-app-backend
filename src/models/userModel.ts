@@ -33,7 +33,7 @@ export const getUserById = async (
 ): Promise<IUser | null> => {
   const projection: { [key: string]: number } = { password: 0, _id: 0, __v: 0 };
   !showEmployer && (projection.employer = showEmployer);
-  return await User.findById(id, projection).lean();
+  return await User.find({ id }, projection).lean();
 };
 
 export const deleteUserById = async (id: string): Promise<number> => {
