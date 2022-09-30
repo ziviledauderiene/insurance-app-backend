@@ -2,7 +2,7 @@
 import bcryptjs from "bcryptjs";
 import { Request, Response } from "express";
 import signJWT from "../functions/signToken";
-import { MyR, IUser, UserTypes } from "../interfaces";
+import { IUser, MyR, UserTypes } from "../interfaces";
 import { getEmployersObjectId } from "../models/employerModel";
 import {
   createNewUser,
@@ -105,12 +105,16 @@ const login = async (req: Request, res: Response) => {
 };
 
 const getAllUsers = async (req: MyR, res: Response) => {
-  const { userType } = req.query;
+  const { userType, employer } = req.query;
   const filter: Partial<IUser> = {};
   userType && (filter.userType = userType as UserTypes);
-
   try {
-    const users: IUser[] = await getUsers(filter);
+    if (typeof employer === "string") {
+      const { _id } = await getEmployersObjectId(employer);
+      filter.employer = _id
+    }
+    const showEmployer = employer ? 1 : 0;
+    const users: IUser[] = await getUsers(filter, showEmployer);
     res.json({
       users,
       count: users.length,
