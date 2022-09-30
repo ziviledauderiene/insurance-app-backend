@@ -12,7 +12,6 @@ const NAMESPACE = "Auth";
 
 const signJWT = (
   user: JWTUser,
-  // eslint-disable-next-line no-unused-vars
   callback: (error: Error | null, token: string | null) => void
 ): void => {
   const {

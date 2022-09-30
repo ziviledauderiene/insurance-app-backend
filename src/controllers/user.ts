@@ -18,7 +18,7 @@ const NAMESPACE = "User";
 
 const MONGODB_DUPLICATE_CODE = 11000;
 
-const validateToken = (req: Request, res: Response) => {
+const validateToken = (_req: Request, res: Response) => {
   logging.info(NAMESPACE, "Token validated, user authorized.");
 
   return res.json({

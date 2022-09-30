@@ -1,7 +1,6 @@
-/* eslint-disable no-unused-vars */
 import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
-import { Document, Types } from "mongoose";
+import { Date, Document, Types } from "mongoose";
 
 export enum UserTypes {
   ADMIN = "admin",
@@ -20,7 +19,7 @@ export interface IUser {
   id?: string;
 }
 
-export type IUserDoc = Document<Types.ObjectId, never, IUser> 
+export type IUserDoc = Document<Types.ObjectId, never, IUser>;
 
 export type JWTUser = Omit<IUser, "password">;
 
@@ -39,3 +38,31 @@ export interface IEmployer extends Document {
   phone: string;
   logo?: string;
 }
+
+export enum Plan {
+  DENTAL = "dental",
+  MEDICAL = "medical",
+}
+
+export enum ClaimStatus {
+  PENDING = "pending",
+  APPROVED = "approved",
+  DENIED = "denied",
+}
+
+export interface IClaim {
+  id: string;
+  claimNumber: string;
+  employer: string;
+  consumer: string;
+  date: Date;
+  plan: Plan;
+  amount: number;
+  status: ClaimStatus;
+}
+
+export type ClaimFilter = Partial<
+  Omit<IClaim, "claimNumber"> & {
+    claimNumber: { $regex: string; $options: string };
+  }
+>;

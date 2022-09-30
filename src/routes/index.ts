@@ -3,6 +3,7 @@ import userController from "../controllers/user";
 import { UserTypes } from "../interfaces";
 import authUserType from "../middlewares/authUserType";
 import verifyToken from "../middlewares/verifyToken";
+import claimsRouter from "./claims";
 import employerRouter from "./employers";
 import userRouter from "./users";
 
@@ -22,6 +23,12 @@ router.use(
   verifyToken,
   authUserType([UserTypes.ADMIN]),
   employerRouter
+);
+router.use(
+  "/api/claims",
+  verifyToken,
+  authUserType([UserTypes.ADMIN]),
+  claimsRouter
 );
 
 export default router;
