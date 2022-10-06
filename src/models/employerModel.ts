@@ -24,3 +24,9 @@ export const getEmployerById = async (
   id: string
 ): Promise<IEmployer & { _id: Types.ObjectId }> =>
   await Employer.findOne({ id }).lean();
+
+  export const updateEmployerById = async (
+    id: string,
+    body: Partial<IEmployer>
+  ): Promise<IEmployer | null> =>
+    await Employer.findOneAndUpdate({ id }, { $set: body }, { new: true }).lean();
