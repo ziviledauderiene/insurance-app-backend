@@ -65,9 +65,9 @@ const getEmployer = async (req: MyR, res: Response): Promise<void> => {
 const updateEmployer = async (req: MyR, res: Response): Promise<void> => {
   const { id } = req.params;
   try {
-    const user: IEmployer | null = await updateEmployerById(id, req.body);
-    if (user) {
-      res.json({ message: `employer ${id} updated`, user });
+    const employer: IEmployer | null = await updateEmployerById(id, req.body);
+    if (employer) {
+      res.json({ message: `employer ${id} updated`, employer });
     } else {
       res.status(404).json({ message: `employer ${id} not found` });
     }
