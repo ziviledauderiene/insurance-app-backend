@@ -1,6 +1,6 @@
 import { Response } from "express";
 import { ClaimFilter, ClaimStatus, IClaim, MyR } from "../interfaces";
-import { getClaims } from "../models/claims";
+import { getClaims, updateClaimById } from "../models/claimModel";
 import { getEmployersObjectId } from "../models/employerModel";
 
 const getAllClaims = async (req: MyR, res: Response): Promise<void> => {
@@ -12,7 +12,7 @@ const getAllClaims = async (req: MyR, res: Response): Promise<void> => {
       filter.employer = _id;
     }
     if (typeof claimNumber === "string") {
-      filter.claimNumber = { $regex: claimNumber as string, $options: "gi" };
+      filter.claimNumber = { $regex: claimNumber, $options: "gi" };
     }
     if (typeof status === "string") {
       filter.status = status as ClaimStatus;
@@ -27,4 +27,18 @@ const getAllClaims = async (req: MyR, res: Response): Promise<void> => {
   }
 };
 
-export default { getAllClaims };
+const updateClaim = async (req: MyR, res: Response): Promise<void> => {
+  const { id } = req.params;
+  try {
+    const claim: IClaim | null = await updateClaimById(id, req.body);
+    if (claim) {
+      res.json({ message: `claim ${id} updated`, claim });
+    } else {
+      res.status(404).json({ message: `claim ${id} not found` });
+    }
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+export default { getAllClaims, updateClaim };
