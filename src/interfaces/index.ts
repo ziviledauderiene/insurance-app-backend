@@ -3,9 +3,9 @@ import { JwtPayload } from "jsonwebtoken";
 import { Date, Document, Types } from "mongoose";
 
 export enum UserTypes {
-  ADMIN = "admin",
-  EMPLOYER = "employer",
-  CONSUMER = "consumer",
+  admin = "admin",
+  employer = "employer",
+  consumer = "consumer",
 }
 
 export interface IUser {
@@ -40,14 +40,14 @@ export interface IEmployer extends Document {
 }
 
 export enum Plan {
-  DENTAL = "dental",
-  MEDICAL = "medical",
+  dental = "dental",
+  medical = "medical",
 }
 
 export enum ClaimStatus {
-  PENDING = "pending",
-  APPROVED = "approved",
-  DENIED = "denied",
+  pending = "pending",
+  approved = "approved",
+  denied = "denied",
 }
 
 export interface IClaim {
@@ -66,3 +66,25 @@ export type ClaimFilter = Partial<
     claimNumber: { $regex: string; $options: string };
   }
 >;
+
+export enum PayrollFrequency {
+  weekly = "weekly",
+  monthly = "monthly",
+}
+
+export enum PlanYearStatus {
+  initialized = "initialized",
+  notInitialized = "not initialized",
+}
+
+export interface IPlanYear {
+  id: string;
+  employer: string;
+  startDate: Date;
+  endDate: Date;
+  payrollFrequency: PayrollFrequency;
+  plan: Plan;
+  name: string;
+  contributions: number;
+  status: PlanYearStatus;
+}
