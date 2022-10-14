@@ -23,10 +23,10 @@ export const getEmployersObjectId = async (
 export const getEmployerById = async (
   id: string
 ): Promise<IEmployer & { _id: Types.ObjectId }> =>
-  await Employer.findOne({ id }).lean();
+  await Employer.findOne({ id }, { _id: 0, __v: 0 }).lean();
 
-  export const updateEmployerById = async (
-    id: string,
-    body: Partial<IEmployer>
-  ): Promise<IEmployer | null> =>
-    await Employer.findOneAndUpdate({ id }, { $set: body }, { new: true }).lean();
+export const updateEmployerById = async (
+  id: string,
+  body: Partial<IEmployer>
+): Promise<IEmployer | null> =>
+  await Employer.findOneAndUpdate({ id }, { $set: body }, { new: true }).lean();

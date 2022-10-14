@@ -12,16 +12,16 @@ import { getEmployersObjectId } from "../models/employerModel";
 import { createNewPlanYear, findPlanYears } from "../models/planYearsModel";
 import { uuidPattern } from "../utils/patterns";
 
+const yesterday = new Date(Date.now() - 86400000);
 const planYearValidationSchema = Joi.object({
-  startDate: Joi.date().greater("now").iso().required(),
+  startDate: Joi.date().greater(yesterday).required(),
   endDate: Joi.date()
     .greater(Joi.ref("startDate"))
     .less(
       Joi.ref("startDate", {
         adjust: (startDate: Date) => addOneYear(startDate),
       })
-    )
-    .iso(),
+    ),
   payrollFrequency: Joi.string()
     .valid(...Object.values(PayrollFrequency))
     .required(),

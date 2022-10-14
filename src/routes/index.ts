@@ -31,6 +31,12 @@ router.use(
   authUserType([UserTypes.admin]),
   claimsRouter
 );
+router.use(
+  "/api/plans",
+  verifyToken,
+  authUserType([UserTypes.admin]),
+  planYearsRouter
+);
 
 router.use(
   "/api/plans",
