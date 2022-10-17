@@ -9,7 +9,12 @@ import {
   PlanYearStatus,
 } from "../interfaces";
 import { getEmployersObjectId } from "../models/employerModel";
-import { createNewPlanYear, findPlanYears } from "../models/planYearsModel";
+import {
+  createNewPlanYear,
+  deletePlanYearById,
+  findPlanYears,
+  initializePlanYearById,
+} from "../models/planYearsModel";
 import { uuidPattern } from "../utils/patterns";
 
 const yesterday = new Date(Date.now() - 86400000);
@@ -34,6 +39,11 @@ const planYearValidationSchema = Joi.object({
     .valid(...Object.values(PlanYearStatus))
     .required(),
   employerId: Joi.string().pattern(uuidPattern).required(),
+});
+
+const PlanYearStatusValidationSchema = Joi.object({
+  status: Joi.string().valid(PlanYearStatus.notInitialized).required(),
+  id: Joi.string().pattern(uuidPattern).required(),
 });
 
 const createPlanYear = async (req: MyR, res: Response): Promise<void> => {
@@ -73,7 +83,50 @@ const getPlanYears = async (req: MyR, res: Response): Promise<void> => {
   }
 };
 
+const deletePlanYear = async (req: MyR, res: Response): Promise<void> => {
+  const { id } = req.params;
+  try {
+    const planYear = await findPlanYears({ id });
+    const { status } = planYear[0];
+    const { error } = PlanYearStatusValidationSchema.validate({ status, id });
+    if (error) {
+      res.status(400).json({ message: error.message, error });
+      return;
+    }
+    const deleted: number = await deletePlanYearById(id);
+    if (deleted) {
+      res.json({ message: `Plan Year ${id} deleted.` });
+    } else {
+      res.status(404).json({ message: `Plan Year ${id} not found.` });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message, error });
+  }
+};
+
+const initializePlanYear = async (req: MyR, res: Response): Promise<void> => {
+  const { id } = req.params;
+  try {
+    const { status } = (await findPlanYears({ id }))[0];
+    const { error } = PlanYearStatusValidationSchema.validate({ status, id });
+    if (error) {
+      res.status(400).json({ message: error.message, error });
+      return;
+    }
+    const planYear: IPlanYear | null = await initializePlanYearById(id);
+    if (planYear) {
+      res.json({ message: `Plan Year ${id} updated`, planYear });
+    } else {
+      res.status(404).json({ message: `Plan Year ${id} not found` });
+    }
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
 export default {
   createPlanYear,
   getPlanYears,
+  deletePlanYear,
+  initializePlanYear,
 };
