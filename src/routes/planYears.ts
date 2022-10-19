@@ -10,5 +10,6 @@ planYearsRouter.patch(
   "/:id/initialize",
   planYearsController.initializePlanYear
 );
+planYearsRouter.patch("/:id", planYearsController.updatePlanYear);
 
 export default planYearsRouter;

@@ -32,7 +32,10 @@ const updateClaim = async (req: MyR, res: Response): Promise<void> => {
   try {
     const claim: IClaim | null = await updateClaimById(id, req.body);
     if (claim) {
-      res.json({ message: `claim ${id} updated`, claim });
+      res.json({
+        message: `Claim ${claim.claimNumber} updated successfully`,
+        claim,
+      });
     } else {
       res.status(404).json({ message: `claim ${id} not found` });
     }

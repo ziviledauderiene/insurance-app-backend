@@ -5,13 +5,16 @@ import {
   deleteEmployerById,
   findEmployers,
   getEmployerById,
-  updateEmployerById
+  updateEmployerById,
 } from "../models/employerModel";
 
 const createEmployer = async (req: MyR, res: Response): Promise<void> => {
   try {
-    const newEmployer: IEmployer = await createNewEmployer(req.body);
-    res.json({ newEmployer });
+    const employer: IEmployer = await createNewEmployer(req.body);
+    res.json({
+      message: `New Employer ${employer.name} created successfully`,
+      employer,
+    });
     return;
   } catch (error) {
     res.status(500).json({ message: error.message, error });
@@ -67,7 +70,10 @@ const updateEmployer = async (req: MyR, res: Response): Promise<void> => {
   try {
     const employer: IEmployer | null = await updateEmployerById(id, req.body);
     if (employer) {
-      res.json({ message: `employer ${id} updated`, employer });
+      res.json({
+        message: `Employer ${employer.name} updated successfully`,
+        employer,
+      });
     } else {
       res.status(404).json({ message: `employer ${id} not found` });
     }
@@ -76,4 +82,10 @@ const updateEmployer = async (req: MyR, res: Response): Promise<void> => {
   }
 };
 
-export default { createEmployer, getEmployers, deleteEmployer, getEmployer, updateEmployer };
+export default {
+  createEmployer,
+  getEmployers,
+  deleteEmployer,
+  getEmployer,
+  updateEmployer,
+};

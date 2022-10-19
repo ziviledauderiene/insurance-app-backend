@@ -14,6 +14,7 @@ import {
   deletePlanYearById,
   findPlanYears,
   initializePlanYearById,
+  updatePlanYearById,
 } from "../models/planYearsModel";
 import { uuidPattern } from "../utils/patterns";
 
@@ -46,6 +47,22 @@ const PlanYearStatusValidationSchema = Joi.object({
   id: Joi.string().pattern(uuidPattern).required(),
 });
 
+const PlanYearUpdateValidationSchema = Joi.object({
+  startDate: Joi.date().greater(yesterday).required(),
+  endDate: Joi.date()
+    .greater(Joi.ref("startDate"))
+    .less(
+      Joi.ref("startDate", {
+        adjust: (startDate: Date) => addOneYear(startDate),
+      })
+    ),
+  payrollFrequency: Joi.string()
+    .valid(...Object.values(PayrollFrequency))
+    .required(),
+  contributions: Joi.number().positive().precision(2).required(),
+  id: Joi.string().pattern(uuidPattern).required(),
+});
+
 const createPlanYear = async (req: MyR, res: Response): Promise<void> => {
   const { employerId } = req.params;
   try {
@@ -57,11 +74,11 @@ const createPlanYear = async (req: MyR, res: Response): Promise<void> => {
       res.status(400).json({ message: error.message, error });
       return;
     }
-    const newPlanYear: IPlanYear = await createNewPlanYear(
-      employerId,
-      req.body
-    );
-    res.json({ newPlanYear });
+    const planYear: IPlanYear = await createNewPlanYear(employerId, req.body);
+    res.json({
+      message: `Plan Year ${planYear.name} created successfully`,
+      planYear,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message, error });
   }
@@ -115,7 +132,32 @@ const initializePlanYear = async (req: MyR, res: Response): Promise<void> => {
     }
     const planYear: IPlanYear | null = await initializePlanYearById(id);
     if (planYear) {
-      res.json({ message: `Plan Year ${id} updated`, planYear });
+      res.json({
+        message: `Plan Year ${planYear.name} initialized successfully`,
+        planYear,
+      });
+    } else {
+      res.status(404).json({ message: `Plan Year ${id} not found` });
+    }
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+};
+
+const updatePlanYear = async (req: MyR, res: Response): Promise<void> => {
+  const { id } = req.params;
+  try {
+    const { error } = PlanYearUpdateValidationSchema.validate({
+      ...req.body,
+      id,
+    });
+    if (error) {
+      res.status(400).json({ message: error.message, error });
+      return;
+    }
+    const planYear = await updatePlanYearById(id, req.body);
+    if (planYear) {
+      res.json({ message: `Plan Year ${planYear.name} updated`, planYear });
     } else {
       res.status(404).json({ message: `Plan Year ${id} not found` });
     }
@@ -129,4 +171,5 @@ export default {
   getPlanYears,
   deletePlanYear,
   initializePlanYear,
+  updatePlanYear,
 };

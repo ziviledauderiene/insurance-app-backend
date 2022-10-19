@@ -30,3 +30,9 @@ export const initializePlanYearById = async (id: string) =>
     { $set: { status: PlanYearStatus.initialized } },
     { new: true }
   ).lean();
+
+export const updatePlanYearById = async (
+  id: string,
+  body: Partial<IPlanYear>
+) =>
+  await PlanYear.findOneAndUpdate({ id }, { $set: body }, { new: true }).lean();

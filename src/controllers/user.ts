@@ -53,13 +53,14 @@ const register = async (req: Request, res: Response): Promise<void> => {
   }
   try {
     const { _id } = await getEmployersObjectId(employer);
-    const newUser = await createNewUser({
+    const user = await createNewUser({
       ...req.body,
       password: hash,
       employer: _id,
     });
     res.status(201).json({
-      newUser,
+      message: `User ${user.username} created successfully`,
+      user,
     });
     return;
   } catch (error) {
@@ -111,7 +112,7 @@ const getAllUsers = async (req: MyR, res: Response) => {
   try {
     if (typeof employer === "string") {
       const { _id } = await getEmployersObjectId(employer);
-      filter.employer = _id
+      filter.employer = _id;
     }
     const showEmployer = employer ? 1 : 0;
     const users: IUser[] = await getUsers(filter, showEmployer);
@@ -147,7 +148,7 @@ const deleteUser = async (req: MyR, res: Response): Promise<void> => {
   try {
     const deleted: number = await deleteUserById(id);
     if (deleted) {
-      res.json({ message: `user ${id} deleted` });
+      res.json({ message: `User deleted` });
     } else {
       res.status(404).json({ message: `user ${id} not found` });
     }
@@ -161,7 +162,7 @@ const updateUser = async (req: MyR, res: Response): Promise<void> => {
   try {
     const user: IUser | null = await updateUserById(id, req.body);
     if (user) {
-      res.json({ message: `user ${id} updated`, user });
+      res.json({ message: `User ${user.username} updated successfully`, user });
     } else {
       res.status(404).json({ message: `user ${id} not found` });
     }
