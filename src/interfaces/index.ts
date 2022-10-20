@@ -58,14 +58,15 @@ export interface IClaim {
   date: Date;
   plan: Plan;
   amount: number;
-  status: ClaimStatus;
+  status: ClaimStatus | "";
 }
 
 export type ClaimFilter = Partial<
-  Omit<IClaim, "claimNumber"> & {
+  Omit<IClaim, "claimNumber" | "status"> & {
     claimNumber: { $regex: string; $options: string };
+    status: { $in: ClaimStatus[] };
   }
->;
+> & { page: number; limit: number };
 
 export enum PayrollFrequency {
   weekly = "weekly",

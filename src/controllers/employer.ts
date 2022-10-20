@@ -44,7 +44,7 @@ const deleteEmployer = async (req: MyR, res: Response): Promise<void> => {
     if (deleted) {
       res.json({ message: `employer ${id} deleted` });
     } else {
-      res.status(404).json({ message: `employer ${id} not found` });
+      res.status(404).json({ friendlyMessage: `Employer ${id} not found` });
     }
   } catch (error) {
     res.status(500).json({ message: error.message, error });
@@ -58,7 +58,7 @@ const getEmployer = async (req: MyR, res: Response): Promise<void> => {
     if (employer) {
       res.json({ employer });
     } else {
-      res.status(404).json({ message: `employer ${id} not found` });
+      res.status(404).json({ friendlyMessage: `Employer ${id} not found` });
     }
   } catch (error) {
     res.status(500).json({ message: error.message, error });
@@ -75,7 +75,7 @@ const updateEmployer = async (req: MyR, res: Response): Promise<void> => {
         employer,
       });
     } else {
-      res.status(404).json({ message: `employer ${id} not found` });
+      res.status(404).json({ friendlyMessage: `Employer ${id} not found` });
     }
   } catch (error) {
     res.status(500).json({ error });

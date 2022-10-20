@@ -1,9 +1,20 @@
 import { ClaimFilter, IClaim } from "../interfaces/index";
 import Claim from "../Schemas/claim";
 
-export const getClaims = async (filter: ClaimFilter): Promise<IClaim[]> => {
+export const getClaims = async (
+  filter: ClaimFilter
+): Promise<{
+  claims: IClaim[];
+  count: number;
+}> => {
   const projection: { [key: string]: number } = { _id: 0, employer: 0 };
-  return await Claim.find(filter, projection).lean();
+  const { page, limit } = filter;
+  const count = await Claim.find(filter, projection).countDocuments();
+  const claims = await Claim.find(filter, projection)
+    .limit(limit)
+    .skip((page - 1) * limit)
+    .lean();
+  return { claims, count };
 };
 
 export const updateClaimById = async (

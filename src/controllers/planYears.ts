@@ -114,7 +114,7 @@ const deletePlanYear = async (req: MyR, res: Response): Promise<void> => {
     if (deleted) {
       res.json({ message: `Plan Year ${id} deleted.` });
     } else {
-      res.status(404).json({ message: `Plan Year ${id} not found.` });
+      res.status(404).json({ friendlyMessage: `Plan Year ${id} not found.` });
     }
   } catch (error) {
     res.status(500).json({ message: error.message, error });
@@ -137,7 +137,7 @@ const initializePlanYear = async (req: MyR, res: Response): Promise<void> => {
         planYear,
       });
     } else {
-      res.status(404).json({ message: `Plan Year ${id} not found` });
+      res.status(404).json({ friendlyMessage: `Plan Year ${id} not found` });
     }
   } catch (error) {
     res.status(500).json({ error });
@@ -159,7 +159,7 @@ const updatePlanYear = async (req: MyR, res: Response): Promise<void> => {
     if (planYear) {
       res.json({ message: `Plan Year ${planYear.name} updated`, planYear });
     } else {
-      res.status(404).json({ message: `Plan Year ${id} not found` });
+      res.status(404).json({ friendlyMessage: `Plan Year ${id} not found` });
     }
   } catch (error) {
     res.status(500).json({ error });

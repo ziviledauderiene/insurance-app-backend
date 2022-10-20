@@ -66,7 +66,8 @@ const register = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     if (error.code === MONGODB_DUPLICATE_CODE) {
       res.status(400).json({
-        message: "duplicate username",
+        friendlyMessage:
+          "This username already exists. Please use different one.",
       });
       return;
     }
@@ -133,7 +134,7 @@ const getUser = async (req: MyR, res: Response): Promise<void> => {
   try {
     const user: IUser | null = await getUserById(id);
     if (!user) {
-      res.status(404).json({ message: "user not found" });
+      res.status(404).json({ friendlyMessage: "User not found" });
       return;
     }
     res.json({ user });
@@ -150,7 +151,7 @@ const deleteUser = async (req: MyR, res: Response): Promise<void> => {
     if (deleted) {
       res.json({ message: `User deleted` });
     } else {
-      res.status(404).json({ message: `user ${id} not found` });
+      res.status(404).json({ friendlyMessage: `User ${id} not found` });
     }
   } catch (error) {
     res.status(500).json({ error });
@@ -164,7 +165,7 @@ const updateUser = async (req: MyR, res: Response): Promise<void> => {
     if (user) {
       res.json({ message: `User ${user.username} updated successfully`, user });
     } else {
-      res.status(404).json({ message: `user ${id} not found` });
+      res.status(404).json({ friendlyMessage: `User ${id} not found` });
     }
   } catch (error) {
     res.status(500).json({ error });
