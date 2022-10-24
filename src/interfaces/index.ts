@@ -62,9 +62,8 @@ export interface IClaim {
 }
 
 export type ClaimFilter = Partial<
-  Omit<IClaim, "claimNumber" | "status"> & {
+  Omit<IClaim, "claimNumber"> & {
     claimNumber: { $regex: string; $options: string };
-    status: { $in: ClaimStatus[] };
   }
 > & { page: number; limit: number };
 

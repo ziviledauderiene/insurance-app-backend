@@ -17,18 +17,8 @@ const getAllClaims = async (req: MyR, res: Response): Promise<void> => {
     if (typeof claimNumber === "string") {
       filter.claimNumber = { $regex: claimNumber, $options: "gi" };
     }
-    if (typeof status === "string") {
-      const claimArray = [];
-      if (status === "") {
-        claimArray.push(
-          ClaimStatus.approved,
-          ClaimStatus.pending,
-          ClaimStatus.denied
-        );
-      } else {
-        claimArray.push(status as ClaimStatus);
-      }
-      filter.status = { $in: claimArray };
+    if (typeof status === "string" && status !== "") {
+      filter.status = status as ClaimStatus;
     }
     const { claims, count } = await getClaims(filter);
     res.json({ claims, count, page });
