@@ -8,7 +8,7 @@
     "build": "tsc -b",
     "start-dev": "nodemon",
     "start-local": "ts-node src/index.ts",
-    "start-prod": "node ./dist/index.js"
+    "start": "node ./dist/index.js"
   },
   "repository": {
     "type": "git",
